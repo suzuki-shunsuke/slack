@@ -172,3 +172,26 @@ func logResponse(resp *http.Response, debug bool) error {
 
 	return nil
 }
+
+func getHTTPClient() HTTPRequester {
+	if customHTTPClient != nil {
+		return customHTTPClient
+	}
+
+	return HTTPClient
+}
+
+// SetHTTPClient allows you to specify a custom http.Client
+// Use this instead of the package level HTTPClient variable if you want to use a custom client like the
+// Stackdriver Trace HTTPClient https://godoc.org/cloud.google.com/go/trace#HTTPClient
+func SetHTTPClient(client HTTPRequester) {
+	customHTTPClient = client
+}
+
+func okJsonHandler(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Set("Content-Type", "application/json")
+	response, _ := json.Marshal(SlackResponse{
+		Ok: true,
+	})
+	rw.Write(response)
+}
